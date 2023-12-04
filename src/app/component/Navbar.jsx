@@ -11,16 +11,18 @@ function Navbar() {
         <nav className="flex  justify-between items-center py-[20px]">
           {/* brand  */}
           <div className="flex  items-center justify-between  w-[30%]">
-            <Logo />
-
+            <Link href={"/"}>
+              <Logo />
+            </Link>
+    
             <div className="relative">
               <Link href={"/futures"}>Futures</Link>
             </div>
           </div>
           {/* menus  */}
 
-          <div  className="flex items-center justify-end">
-            <ChainDropdown/>
+          <div className="flex items-center justify-end">
+            <ChainDropdown />
             {/* connect wallet  */}
             <ConnectWallet />
           </div>

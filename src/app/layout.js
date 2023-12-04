@@ -1,4 +1,3 @@
-import "bootstrap/dist/css/bootstrap.min.css";
 import Provider from "./Provider";
 import Navbar from "./component/Navbar";
 import Footer from "./component/footer/Footer";

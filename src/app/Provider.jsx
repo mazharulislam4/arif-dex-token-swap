@@ -1,5 +1,5 @@
 "use client";
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, ToastContainer } from "@chakra-ui/react";
 import { ChainProvider } from "./context/chainContext";
 import { ConnectWalletProvider } from "./context/connectWalletProvider";
 

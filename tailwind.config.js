@@ -11,9 +11,11 @@ module.exports = {
       secondaryColor: "#0E1330",
       gray: "#3C497C",
       darkColor: "#121737",
-      buttonHover:"#1A2049",
+      buttonHover: "#1A2049",
       lightBlue: "#A8DAFF",
       lightOrange: "#FFF7E6",
+      tailTransparent: "transparent",
+      black: "#000",
     },
     fontFamily: {
       clashVariable: ["ClashGrotesk-Variable", "sans-serif"],
@@ -24,5 +26,5 @@ module.exports = {
       clashMedium: ["ClashGrotesk-Medium", "sans-serif"],
     },
   },
-  plugins: [],
+  plugins: [require("tailwind-scrollbar-hide")],
 };

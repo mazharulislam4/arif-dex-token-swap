@@ -6,6 +6,7 @@ import WalletsDropdown from "./dropdown/WalletsDropdown";
 function ConnectWallet() {
   const { address, connectWalletHandler } = useConnectWallet();
 
+  
   return (
     <>
       {!address ? (

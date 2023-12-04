@@ -10,7 +10,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-export const DownArrow = ({ isVisible }) => {
+export const DownArrow = ({ isVisible = true }) => {
   if (!isVisible) return <span></span>;
 
   return (
@@ -49,7 +49,7 @@ function WalletsDropdown({ connectHandler, isArrow = true, text }) {
   return (
     <Menu className="px-[38px] py-[16px] !bg-secondary  !text-[#fff] rounded-full medium_font_size">
       <MenuButton
-        className="bg-transparent text-white"
+        className="!bg-tailTransparent text-white"
         as={Button}
         rightIcon={<DownArrow isVisible={isArrow} />}
       >

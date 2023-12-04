@@ -1,27 +1,30 @@
-import { OpenoceanSdk } from "@openocean.finance/openocean-sdk";
 import axios from "axios";
-const genSdk = new OpenoceanSdk();
-const { api, swapSdk, config } = genSdk;
 
-// export sdk object
-export const openoceanSdk = {
-  api,
-  swapSdk,
-  config,
+export const openoceanSdk = async () => {
+  const { OpenoceanSdk } = await import("@openocean.finance/openocean-sdk");
+  const genSdk = new OpenoceanSdk();
+  console.log(genSdk.web3);
+  console.log("sdk ", genSdk);
+
+  //  const res = await genSdk.api.getTokenPrice("wbnb");
+
+  return genSdk;
 };
 
-// console.log(swapSdk);
-
-export const getAllChainNames = () => {
-  return config.chains;
+export const getAllChainNames = async () => {
+  const sdk = await openoceanSdk();
+  return sdk.config.chains;
 };
 
-export const getAllWalletsName = () => {
-  return config.wallets.walletList;
+export const getAllWalletsName = async () => {
+  const sdk = await openoceanSdk();
+
+  return sdk.config.wallets.walletList;
 };
 
 export const connectWallet = async (chain, walletName) => {
-  return swapSdk.connectWallet({
+  const sdk = await openoceanSdk();
+  return await sdk.swapSdk.connectWallet({
     chainName: chain,
     walletName: walletName,
   });
@@ -34,7 +37,9 @@ export const getBalance = async (
   tokenAddress,
   tokenDecimals
 ) => {
-  return await swapSdk.getBalance({
+  const sdk = await openoceanSdk();
+
+  return await sdk.swapSdk.getBalance({
     account: walletAddress,
     chain: chain,
     tokenAddressOrSymbol: tokenAddress,
@@ -72,7 +77,8 @@ export const getQuote = async (
 // get gas price
 export const getGasprice = async (chain) => {
   if (!chain) throw new Error("Must need chain name");
-  return await api.getGasPrice({
+  const sdk = await openoceanSdk();
+  return await sdk.api.getGasPrice({
     chain: chain,
   });
 };
@@ -81,8 +87,8 @@ export const getGasprice = async (chain) => {
 
 export const getExchange = async (chain) => {
   if (!chain) throw new Error("Must need chain name");
-
-  return await api.exchange({
+  const sdk = await openoceanSdk();
+  return await sdk.api.exchange({
     chain: chain,
   });
 };
@@ -103,8 +109,9 @@ export const getAllowance = async (
     !walletAddress
   )
     throw new Error("Parameter missed!");
+  const sdk = await openoceanSdk();
 
-  return await swapSdk.getAllowance({
+  return await sdk.swapSdk.getAllowance({
     chain: chainName,
     decimals: decimals,
     tokenAddress: tokenAddress,
@@ -132,8 +139,9 @@ export const getApprove = async (
     !amount
   )
     throw new Error("Parameter missed!");
+  const sdk = await openoceanSdk();
 
-  return await swapSdk.approve({
+  return await sdk.swapSdk.approve({
     chain: chainName,
     tokenAddress: tokenAddress,
     approveContract: approveContract,
@@ -165,8 +173,9 @@ export const getSwapQuote = async (
     !gasPrice
   )
     throw new Error("Parameter missed!");
+  const sdk = await openoceanSdk();
 
-  return await swapSdk.swapQuote({
+  return await sdk.swapSdk.swapQuote({
     chain: chainName,
     inTokenAddress: inTokenAddress,
     outTokenAddress: outTokenAddress,
@@ -179,12 +188,9 @@ export const getSwapQuote = async (
 
 // do swap
 
-export const doSwap = (data) => {
+export const doSwap = async (data) => {
   if (!data) throw new Error("Parameter missed!");
+  const sdk = await openoceanSdk();
 
-  return swapSdk.swap(data);
-};
-
-export const getTokenPrice = async (id) => {
-  return await swapSdk.api.getTokenPrice(id);
+  return sdk.swapSdk.swap(data);
 };

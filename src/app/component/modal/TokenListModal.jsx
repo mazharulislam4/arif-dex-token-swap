@@ -13,6 +13,7 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
+  Skeleton,
   Stack,
   Text,
 } from "@chakra-ui/react";
@@ -26,6 +27,8 @@ function TokenListInputAndModal({
   tokenListData,
   setToken,
   topHeaderText,
+  isLoading,
+  listLoading,
 }) {
   const [show, setShow] = useState(false);
   const { chain } = useChain();
@@ -42,23 +45,27 @@ function TokenListInputAndModal({
   // get token balance
 
   useEffect(() => {
-    if (token && address) {
-      (async () => {
-        try {
-          const balance = await getBalance(
-            address,
-            chain?.chain?.key,
-            token.address,
-            token.decimals
-          );
+    const fetchData = async () => {
+      if (token && address && chain) {
+        if (token.chain === chain?.chain.key) {
+          try {
+            const balanceData = await getBalance(
+              address,
+              chain.chain.key,
+              token.address,
+              token.decimals
+            );
 
-          setTokenBalance(balance.short);
-        } catch (err) {
-          console.log(err);
+            setTokenBalance(balanceData.short);
+          } catch (error) {
+            console.error("getBalance error:", error);
+          }
         }
-      })();
-    }
-  }, [token, address]);
+      }
+    };
+
+    fetchData();
+  }, [chain, address, token, token?.address, token?.decimals]);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -81,11 +88,11 @@ function TokenListInputAndModal({
           return setNotfoundError("Not found this token in this chain");
         }
         setNotfoundError("");
-        return setTokenList(tokenListData);
+        return setTokenList(tokenList);
       }
     }
     setNotfoundError("");
-    return setTokenList(tokenList);
+    return setTokenList(tokenListData);
   };
 
   return (
@@ -106,54 +113,67 @@ function TokenListInputAndModal({
           </Text>
         </Stack>
 
-        <Box className="bg-secondaryColor shadow-sm shadow-gray  rounded-lg">
+        <Box className="bg-secondaryColor border-1 border-gray  rounded-lg px-2">
           <Stack
             direction={"row"}
             alignItems={"center"}
             className="w-full py-[28px] px-[23px] "
+            gap={"10px"}
           >
             {/* input filed  */}
-            <Input
-              type="text"
-              value={value}
-              onChange={(e) => {
-                onInputChange(e);
-              }}
-              className="border-0 focus:!shadow-none"
-            />
+            {isLoading ? (
+              <Box className="h-full w-full">
+                <Skeleton height={10} className="h-full w-full" />
+              </Box>
+            ) : (
+              <Input
+                type="text"
+                value={value}
+                onChange={(e) => {
+                  onInputChange(e);
+                }}
+                className="!border-0 focus:!shadow-none  !p-0"
+              />
+            )}
 
-            <div className="flex gap-3 items-center">
-              <img src={token?.icon} alt="icon" className="w-[25px]" />
+            {listLoading ? (
+              <Box>
+                <Skeleton height={10} width={30} />
+              </Box>
+            ) : (
+              <div className="flex gap-3 items-center">
+                <img src={token?.icon} alt="icon" className="w-[25px]" />
 
-              <p>{token?.symbol}</p>
-              <button type="button" onClick={handleShow}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width={12}
-                  height={9}
-                  viewBox="0 0 12 9"
-                  fill="none"
-                >
-                  <path
-                    d="M7.63031 7.70567C6.83302 8.8277 5.16698 8.8277 4.36968 7.70567L1.31616 3.40848C0.375189 2.08425 1.32198 0.25 2.94648 0.25L9.05352 0.250001C10.678 0.250001 11.6248 2.08425 10.6838 3.40848L7.63031 7.70567Z"
-                    fill="url(#paint0_linear_1_70)"
-                  />
-                  <defs>
-                    <linearGradient
-                      id="paint0_linear_1_70"
-                      x1={14}
-                      y1="7.88372"
-                      x2="-3.92428"
-                      y2="6.18004"
-                      gradientUnits="userSpaceOnUse"
-                    >
-                      <stop stopColor="#A8DAFF" />
-                      <stop offset={1} stopColor="#FFF7E6" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </button>
-            </div>
+                <p>{token?.symbol}</p>
+                <button type="button" onClick={handleShow}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width={12}
+                    height={9}
+                    viewBox="0 0 12 9"
+                    fill="none"
+                  >
+                    <path
+                      d="M7.63031 7.70567C6.83302 8.8277 5.16698 8.8277 4.36968 7.70567L1.31616 3.40848C0.375189 2.08425 1.32198 0.25 2.94648 0.25L9.05352 0.250001C10.678 0.250001 11.6248 2.08425 10.6838 3.40848L7.63031 7.70567Z"
+                      fill="url(#paint0_linear_1_70)"
+                    />
+                    <defs>
+                      <linearGradient
+                        id="paint0_linear_1_70"
+                        x1={14}
+                        y1="7.88372"
+                        x2="-3.92428"
+                        y2="6.18004"
+                        gradientUnits="userSpaceOnUse"
+                      >
+                        <stop stopColor="#A8DAFF" />
+                        <stop offset={1} stopColor="#FFF7E6" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                </button>
+              </div>
+            )}
           </Stack>
         </Box>
       </Box>
@@ -177,7 +197,7 @@ function TokenListInputAndModal({
             <ModalCloseButton className="!static !text-gray !w-[30px] !h-[30px] !rounded-full border-2 border-gray" />
           </ModalHeader>
 
-          <ModalBody className="p-0 m-0  max-h-[300px] overflow-auto">
+          <ModalBody className="p-0 m-0  max-h-[300px] overflow-auto scrollbar-hide">
             <List className=" m-0 !list-unstyled">
               <ListItem className="px-[45px] !list-unstyled my-[30px]">
                 <Input
@@ -186,7 +206,7 @@ function TokenListInputAndModal({
                   type="search"
                   ref={searchInputRef}
                   onChange={searchHandler}
-                  className="!placeholder:text-secondaryColor border-0 py-[25px] !bg-darkColor  focus:!shadow-none"
+                  className="!placeholder:text-secondaryColor !border-0 py-[25px] !bg-darkColor  focus:!shadow-none"
                 />
               </ListItem>
 

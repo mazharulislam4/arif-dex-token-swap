@@ -1,4 +1,13 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {}
+const nextConfig = {
+  webpack: (config, { isServer }) => {
+    // Disable SSR for all components
+    if (!isServer) {
+      config.resolve.fallback = { fs: false, module: false };
+    }
 
-module.exports = nextConfig
+    return config;
+  },
+};
+
+module.exports = nextConfig;

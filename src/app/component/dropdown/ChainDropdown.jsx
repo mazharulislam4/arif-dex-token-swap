@@ -1,5 +1,6 @@
 "use client";
 import { useChain } from "@/app/context/chainContext";
+import { useConnectWallet } from "@/app/context/connectWalletProvider";
 import { getAllChainNames } from "@/app/utils/utils";
 import {
   Button,
@@ -16,50 +17,63 @@ import bscIcon from "../../assets/Icons/bsc.svg";
 import ethIcon from "../../assets/Icons/eth.svg";
 import { DownArrow } from "./WalletsDropdown";
 
+
+
 export default function ChainDropdown() {
   const [chainList, setChainList] = useState([]);
   const [selectedChain, setSelectedChain] = useState(null);
   const { addChain, addChainList } = useChain();
+  const { wallet, connectWalletHandler } = useConnectWallet();
 
   useEffect(() => {
-    if (chainList?.length === 0) {
-      let AllChainNames = getAllChainNames();
-      console.log(AllChainNames);
-      const list = AllChainNames?.chainList.filter(
-        (chain) =>
-          chain.key === "arbitrum" || chain.key === "bsc" || chain.key === "eth"
-      );
+    (async () => {
+      if (chainList?.length === 0) {
+        let AllChainNames = await getAllChainNames();
+        console.log(AllChainNames);
+        const list = AllChainNames?.chainList.filter(
+          (chain) =>
+            chain.key === "arbitrum" ||
+            chain.key === "bsc" ||
+            chain.key === "eth"
+        );
 
-      const listWithIcon = list?.map((chain) => ({
-        icon:
-          (chain?.key === "bsc" && bscIcon) ||
-          (chain?.key === "eth" && ethIcon) ||
-          (chain?.key === "arbitrum" && arbitrumIcon),
-        chain: chain,
-      }));
+        const listWithIcon = list?.map((chain) => ({
+          icon:
+            (chain?.key === "bsc" && bscIcon) ||
+            (chain?.key === "eth" && ethIcon) ||
+            (chain?.key === "arbitrum" && arbitrumIcon),
+          chain: chain,
+        }));
 
-      setChainList(listWithIcon);
+        setChainList(listWithIcon);
 
-      const findBsc = listWithIcon?.find(
-        (value) => value?.chain?.key === "eth"
-      );
-      setSelectedChain(findBsc);
-      addChain(findBsc);
-      addChainList(listWithIcon);
-    }
+        const findBsc = listWithIcon?.find(
+          (value) => value?.chain?.key === "eth"
+        );
+        setSelectedChain(findBsc);
+        addChain(findBsc);
+        addChainList(listWithIcon);
+      }
+    })();
   }, []);
 
-
-  const chainSelecteHandler = (chain) => {
-    setSelectedChain(chain);
-    addChain(chain);
+  const chainSelecteHandler = async (chain) => {
+    try {
+      if (wallet) {
+        await wallet.requestConnect(chain?.chain?.id);
+        await connectWalletHandler(wallet.name, chain?.chain?.key);
+      }
+      setSelectedChain(chain);
+      addChain(chain);
+    } catch (err) {
+      console.log(err);
+    }
   };
-  
 
   return (
-    <Menu className="px-[38px] py-[16px] !bg-secondary  !text-[#fff] rounded-full medium_font_size">
+    <Menu className="px-[38px] py-[16px]   !text-[#fff] rounded-full medium_font_size">
       <MenuButton
-        className="bg-transparent text-white"
+        className="!bg-tailTransparent text-white"
         as={Button}
         rightIcon={<DownArrow />}
       >
@@ -85,7 +99,7 @@ export default function ChainDropdown() {
             }}
           >
             <img src={value?.icon?.src} alt="icon" />
-            <p className="capitalize text-black">{value?.chain?.key}</p>
+            <p className="capitalize !text-black">{value?.chain?.key}</p>
           </MenuItem>
         ))}
       </MenuList>
