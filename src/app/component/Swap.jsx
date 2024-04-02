@@ -34,6 +34,7 @@ function Swap() {
   const [tokenPrice, setTokenPrice] = useState(null);
   const [gasLoading, setGasLoading] = useState(false);
   const [tokenPriceLoading, setTokenPriceLoading] = useState(false);
+  const [isTokenSwitch , setIsTokenSwitch] = useState(false); 
   const [inputTokenPriceLoading, setInputTokenPriceLoading] = useState(false);
   const [listLoading, setListLoading] = useState(false);
   const [swapLoading, setSwapLoading] = useState(false);
@@ -144,6 +145,7 @@ function Swap() {
     setOutToken(inToken);
     setInTokenInput("0.00");
     setOutTokenInput("0.00");
+    setIsTokenSwitch(!isTokenSwitch); 
   };
 
   // get tokens  quote
@@ -226,7 +228,6 @@ function Swap() {
     }
   };
 
-  console.log(swapLoading);
   // handlers
   const setInTokenHandler = (token) => {
     setInToken(token);
@@ -444,7 +445,7 @@ function Swap() {
             Trade tokens at best rates
           </Text>
         </Box>
-        <Box className="absolute  top-[50%] right-0 transform translate-y-[-50%] ">
+        <Box className="absolute cursor-pointer  top-[50%] right-0 transform translate-y-[-50%] ">
           <svg
             width={24}
             height={24}
@@ -492,6 +493,7 @@ function Swap() {
             viewBox="0 0 24 24"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
+            className= {` duration-300 ${isTokenSwitch ?  'transform rotate-180' : ''}`}
           >
             <g clipPath="url(#clip0_1_66)">
               <path

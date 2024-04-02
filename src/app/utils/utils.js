@@ -16,11 +16,14 @@ export const getAllChainNames = async () => {
   return sdk.config.chains;
 };
 
+
+
 export const getAllWalletsName = async () => {
   const sdk = await openoceanSdk();
 
   return sdk.config.wallets.walletList;
 };
+
 
 export const connectWallet = async (chain, walletName) => {
   const sdk = await openoceanSdk();
@@ -29,6 +32,8 @@ export const connectWallet = async (chain, walletName) => {
     walletName: walletName,
   });
 };
+
+
 
 // get token balance <Accordion>
 export const getBalance = async (

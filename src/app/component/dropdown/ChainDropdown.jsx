@@ -1,7 +1,6 @@
 "use client";
 import { useChain } from "@/app/context/chainContext";
 import { useConnectWallet } from "@/app/context/connectWalletProvider";
-import { getAllChainNames } from "@/app/utils/utils";
 import {
   Button,
   Menu,
@@ -11,51 +10,13 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import arbitrumIcon from "../../assets/Icons/arbitrum.svg";
-import bscIcon from "../../assets/Icons/bsc.svg";
-import ethIcon from "../../assets/Icons/eth.svg";
+import { useState } from "react";
 import { DownArrow } from "./WalletsDropdown";
 
-
-
 export default function ChainDropdown() {
-  const [chainList, setChainList] = useState([]);
-  const [selectedChain, setSelectedChain] = useState(null);
-  const { addChain, addChainList } = useChain();
   const { wallet, connectWalletHandler } = useConnectWallet();
-
-  useEffect(() => {
-    (async () => {
-      if (chainList?.length === 0) {
-        let AllChainNames = await getAllChainNames();
-        console.log(AllChainNames);
-        const list = AllChainNames?.chainList.filter(
-          (chain) =>
-            chain.key === "arbitrum" ||
-            chain.key === "bsc" ||
-            chain.key === "eth"
-        );
-
-        const listWithIcon = list?.map((chain) => ({
-          icon:
-            (chain?.key === "bsc" && bscIcon) ||
-            (chain?.key === "eth" && ethIcon) ||
-            (chain?.key === "arbitrum" && arbitrumIcon),
-          chain: chain,
-        }));
-
-        setChainList(listWithIcon);
-
-        const findBsc = listWithIcon?.find(
-          (value) => value?.chain?.key === "eth"
-        );
-        setSelectedChain(findBsc);
-        addChain(findBsc);
-        addChainList(listWithIcon);
-      }
-    })();
-  }, []);
+  const { addChain, chainList, chain } = useChain();
+  const [selectedChain, setSelectedChain] = useState(chain);
 
   const chainSelecteHandler = async (chain) => {
     try {
@@ -77,8 +38,14 @@ export default function ChainDropdown() {
         as={Button}
         rightIcon={<DownArrow />}
       >
-        <Stack direction={"row"} gap={"10px"}>
-          <img src={selectedChain?.icon?.src} alt="chain icon" />
+        <Stack direction={"row"} gap={"10px"} alignItems={"center"}>
+          <img
+            src={selectedChain?.icon?.src}
+            alt="chain icon"
+            loading="lazy"
+            decoding="async"
+            className="w-8 h-8"
+          />
           <Text
             bgGradient="linear-gradient(94deg, #A8DAFF 1.17%, #FFF7E6 106.1%)"
             bgClip="text"
@@ -98,7 +65,13 @@ export default function ChainDropdown() {
               chainSelecteHandler(value);
             }}
           >
-            <img src={value?.icon?.src} alt="icon" />
+            <img
+              src={value?.icon?.src}
+              alt="icon"
+              loading="lazy"
+              decoding="async"
+              className="w-8 h-8"
+            />
             <p className="capitalize !text-black">{value?.chain?.key}</p>
           </MenuItem>
         ))}
