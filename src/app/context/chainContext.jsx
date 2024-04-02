@@ -4,9 +4,10 @@ const Context = createContext({});
 
 export const useChain = () => useContext(Context);
 
-export const ChainProvider = ({ chainList , defaultChain,  children }) => {
+export const ChainProvider = ({ chainList, defaultChain, children }) => {
   const [chain, setChain] = useState(defaultChain);
   const [chainsList, setChainList] = useState(chainList || []);
+
 
   const addChain = (wallet) => {
     setChain(wallet);
@@ -17,7 +18,9 @@ export const ChainProvider = ({ chainList , defaultChain,  children }) => {
   };
 
   return (
-    <Context.Provider value={{ chain, addChain, addChainList, chainList: chainsList }}>
+    <Context.Provider
+      value={{ chain, addChain, addChainList, chainList: chainsList }}
+    >
       {children}
     </Context.Provider>
   );

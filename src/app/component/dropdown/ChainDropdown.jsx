@@ -18,6 +18,8 @@ export default function ChainDropdown() {
   const { addChain, chainList, chain } = useChain();
   const [selectedChain, setSelectedChain] = useState(chain);
 
+
+
   const chainSelecteHandler = async (chain) => {
     try {
       if (wallet) {
@@ -30,6 +32,8 @@ export default function ChainDropdown() {
       console.log(err);
     }
   };
+
+
 
   return (
     <Menu className="px-[38px] py-[16px]   !text-[#fff] rounded-full medium_font_size">

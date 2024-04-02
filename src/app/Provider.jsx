@@ -9,55 +9,51 @@ import { ChainProvider } from "./context/chainContext";
 import { ConnectWalletProvider } from "./context/connectWalletProvider";
 import { getAllChainNames } from "./utils/utils";
 
-
 function Provider({ children }) {
   const [isLoading, setIsLoading] = useState(true);
-  const [chainList , setChainList] = useState([]); 
-  const [defaultChain , setDefaultChain] = useState({})
+  const [chainList, setChainList] = useState([]);
+  const [defaultChain, setDefaultChain] = useState({});
 
-  // loading 
+  // loading
   useEffect(() => {
     setInterval(() => {
       setIsLoading(false);
     }, 2000);
   }, []);
 
+  useEffect(() => {
+    (async () => {
+      if (chainList?.length === 0) {
+        let AllChainNames = await getAllChainNames();
 
-    useEffect(() => {
-      (async () => {
-        if (chainList?.length === 0) {
-          let AllChainNames = await getAllChainNames();
+        const list = AllChainNames?.chainList.filter(
+          (chain) =>
+            chain.key === "arbitrum" ||
+            chain.key === "bsc" ||
+            chain.key === "eth" ||
+            chain.key === "zksync"
+        );
 
-          const list = AllChainNames?.chainList.filter(
-            (chain) =>
-              chain.key === "arbitrum" ||
-              chain.key === "bsc" ||
-              chain.key === "eth" ||
-              chain.key === "zksync"
-          );
 
-          console.log( "provider" ,  list);
+        const listWithIcon = list?.map((chain) => ({
+          icon:
+            (chain?.key === "bsc" && bscIcon) ||
+            (chain?.key === "eth" && ethIcon) ||
+            (chain?.key === "arbitrum" && arbitrumIcon) ||
+            (chain?.key === "zksync" && Zksync),
 
-          const listWithIcon = list?.map((chain) => ({
-            icon:
-              (chain?.key === "bsc" && bscIcon) ||
-              (chain?.key === "eth" && ethIcon) ||
-              (chain?.key === "arbitrum" && arbitrumIcon) ||
-              (chain?.key === "zksync" && Zksync),
+          chain: chain,
+        }));
 
-            chain: chain,
-          }));
+        const findDefault = listWithIcon?.find(
+          (value) => value?.chain?.key === "eth"
+        );
 
-                  const findDefault = listWithIcon?.find(
-                    (value) => value?.chain?.key === "eth"
-                  );
-
-          setChainList(listWithIcon);
-          setDefaultChain(findDefault); 
-        }
-      })();
-    }, []);
-
+        setChainList(listWithIcon);
+        setDefaultChain(findDefault);
+      }
+    })();
+  }, []);
 
   return isLoading ? (
     <div className="h-screen w-full text-center flex justify-center items-center">
@@ -65,7 +61,7 @@ function Provider({ children }) {
     </div>
   ) : (
     <ChakraProvider>
-      <ChainProvider chianList={chainList} defaultChain = {defaultChain}>
+      <ChainProvider chainList={chainList} defaultChain={defaultChain}>
         <ConnectWalletProvider>{children}</ConnectWalletProvider>
       </ChainProvider>
     </ChakraProvider>
