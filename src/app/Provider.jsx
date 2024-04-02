@@ -14,43 +14,44 @@ function Provider({ children }) {
   const [chainList, setChainList] = useState([]);
   const [defaultChain, setDefaultChain] = useState({});
 
-  // loading
-  useEffect(() => {
-    setInterval(() => {
-      setIsLoading(false);
-    }, 2000);
-  }, []);
-
   useEffect(() => {
     (async () => {
-      if (chainList?.length === 0) {
-        let AllChainNames = await getAllChainNames();
+      try {
+        if (chainList?.length === 0) {
+          await new Promise((resolve) => setTimeout(resolve, 3000));
+          let AllChainNames = await getAllChainNames();
+          setIsLoading(false);
 
-        const list = AllChainNames?.chainList.filter(
-          (chain) =>
-            chain.key === "arbitrum" ||
-            chain.key === "bsc" ||
-            chain.key === "eth" ||
-            chain.key === "zksync"
-        );
+          const list = AllChainNames?.chainList.filter(
+            (chain) =>
+              chain.key === "arbitrum" ||
+              chain.key === "bsc" ||
+              chain.key === "eth" ||
+              chain.key === "zksync"
+          );
 
+          const listWithIcon = list?.map((chain) => ({
+            icon:
+              (chain?.key === "bsc" && bscIcon) ||
+              (chain?.key === "eth" && ethIcon) ||
+              (chain?.key === "arbitrum" && arbitrumIcon) ||
+              (chain?.key === "zksync" && Zksync),
 
-        const listWithIcon = list?.map((chain) => ({
-          icon:
-            (chain?.key === "bsc" && bscIcon) ||
-            (chain?.key === "eth" && ethIcon) ||
-            (chain?.key === "arbitrum" && arbitrumIcon) ||
-            (chain?.key === "zksync" && Zksync),
+            chain: chain,
+          }));
 
-          chain: chain,
-        }));
+          const findDefault = listWithIcon?.find(
+            (value) => value?.chain?.key === "eth"
+          );
 
-        const findDefault = listWithIcon?.find(
-          (value) => value?.chain?.key === "eth"
-        );
-
-        setChainList(listWithIcon);
-        setDefaultChain(findDefault);
+          setChainList(listWithIcon);
+          setDefaultChain(findDefault);
+        }
+      } catch (err) {
+        console.log(err);
+        setIsLoading(false);
+      } finally {
+        setIsLoading(false);
       }
     })();
   }, []);

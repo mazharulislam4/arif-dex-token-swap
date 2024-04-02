@@ -40,6 +40,9 @@ function Swap() {
   const [swapLoading, setSwapLoading] = useState(false);
   const toast = useToast();
 
+
+  console.log(chain);
+
   useEffect(() => {
     (async () => {
       if (chain) {
@@ -71,7 +74,7 @@ function Swap() {
       (async () => {
         setGasLoading(true);
         try {
-          const price = await getGasprice(chain.chain.key);
+          const price = await getGasprice(chain?.chain?.key);
           setGasprice(price);
           setGasLoading(false);
         } catch (err) {
@@ -126,7 +129,7 @@ function Swap() {
       "FTM",
     ];
 
-    return data.filter((token) => {
+    return data?.filter((token) => {
       const symbol = token?.symbol;
       switch (selectedChain) {
         case arbitrumChainKey:
@@ -267,7 +270,7 @@ function Swap() {
           return setSwapLoading(false);;
         }
 
-        const exchange = await getExchange(chain.chain.key);
+        const exchange = await getExchange(chain?.chain?.key);
         if (!exchange) return;
 
         const allowance = await allowanceHandler(exchange.data.approveContract);

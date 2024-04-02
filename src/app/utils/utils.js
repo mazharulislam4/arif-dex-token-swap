@@ -81,7 +81,7 @@ export const getQuote = async (
 
 // get gas price
 export const getGasprice = async (chain) => {
-  if (!chain) throw new Error("Must need chain name");
+  if (!chain) return;
   const sdk = await openoceanSdk();
   return await sdk.api.getGasPrice({
     chain: chain,
